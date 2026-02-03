@@ -1,0 +1,59 @@
+name: Update README cards
+
+on:
+  schedule:
+    - cron: "0 3 * * *" # 毎日 12:00 JST（UTC 03:00）
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Stats (light)
+      - name: Generate stats (light)
+        uses: readme-tools/github-readme-stats-action@v1
+        with:
+          card: stats
+          options: username=daisukemaki1003&show_icons=true
+          path: profile/stats_light.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Stats (dark: radical)
+      - name: Generate stats (dark)
+        uses: readme-tools/github-readme-stats-action@v1
+        with:
+          card: stats
+          options: username=daisukemaki1003&show_icons=true&theme=radical
+          path: profile/stats_dark.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Top Langs (light)
+      - name: Generate top langs (light)
+        uses: readme-tools/github-readme-stats-action@v1
+        with:
+          card: top-langs
+          options: username=daisukemaki1003&layout=compact
+          path: profile/top_langs_light.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      # Top Langs (dark: radical)
+      - name: Generate top langs (dark)
+        uses: readme-tools/github-readme-stats-action@v1
+        with:
+          card: top-langs
+          options: username=daisukemaki1003&layout=compact&theme=radical
+          path: profile/top_langs_dark.svg
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Commit cards
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add profile/*.svg
+          git commit -m "Update README cards" || exit 0
+          git push
