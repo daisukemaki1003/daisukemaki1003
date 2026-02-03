@@ -1,18 +1,30 @@
-name: Metrics
+name: Update GitHub Stats Cards
 
 on:
   schedule:
-    # 毎日 12:00(JST) に更新したい場合 → 03:00(UTC)
-    - cron: "0 3 * * *"
+    - cron: "0 3 * * *"   # 毎日 12:00 JST（UTC 03:00）
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  github-metrics:
+  build:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: write
     steps:
-      - uses: lowlighter/metrics@latest
+      - uses: actions/checkout@v4
+
+      - name: Generate cards
+        uses: jstrieb/readme-stats@v1
         with:
-          token: ${{ secrets.METRICS_TOKEN }}
+          user: daisukemaki1003
+          # 出力先（Actionのデフォルトに従う / ここはREADMEに合わせて調整）
+          # theme は後で好みに合わせて変更できる
+
+      - name: Commit & push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: update readme stats" || exit 0
+          git push
